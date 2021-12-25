@@ -33,7 +33,7 @@ class Song(m.Model):
 
     def save(self, *args, **kwargs):
         self.slug = slugify(str(self.name))
-        print(self.slug, str(self.name))
+
         super(Song, self).save(*args, **kwargs)
 
     def __str__(self):
