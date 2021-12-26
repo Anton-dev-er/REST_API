@@ -1,26 +1,15 @@
-from django.utils.timezone import now
 from rest_framework import serializers
 
 from .models import Song, Singer
 
 
-class SingerSerializerInSong(serializers.ModelSerializer):
-    # url = serializers.SerializerMethodField()
-    url = serializers.HyperlinkedIdentityField(
-        view_name='singer-detail',
-        lookup_field='slug'
-    )
-
-    class Meta:
-        model = Singer
-        fields = ['url', 'nickname']
-
-    # def get_url(self, obj):
-    #     return 'test'
-
-
 class SongSerializer(serializers.ModelSerializer):
-    singer = SingerSerializerInSong(many=True)
+    singer = serializers.SlugRelatedField(
+        many=True,
+        read_only=False,
+        queryset=Singer.objects.all(),
+        slug_field='nickname'
+    )
     url = serializers.HyperlinkedIdentityField(
         view_name='song-detail',
         lookup_field='slug'
@@ -32,6 +21,22 @@ class SongSerializer(serializers.ModelSerializer):
 
 
 class SingerSerializer(serializers.ModelSerializer):
+    url = serializers.HyperlinkedIdentityField(
+        view_name='singer-detail',
+        lookup_field='slug',
+    )
+
     class Meta:
         model = Singer
-        exclude = ['slug', 'created_at', 'updated_at']
+        fields = ['url', 'id', 'nickname', 'first_name', 'last_name', 'image']
+
+
+class SingerAddForSong(serializers.ModelSerializer):
+    url = serializers.HyperlinkedIdentityField(
+        view_name='singer-detail',
+        lookup_field='slug',
+    )
+
+    class Meta:
+        model = Singer
+        fields = ['url', 'id', 'nickname']
